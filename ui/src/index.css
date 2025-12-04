@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+:root {
+  /* Core Colors */
+  --terminal-green-rgb: 234, 179, 8;
+
+
+  --terminal-bg: #13110b;
+  --terminal-black: #000000;
+
+  /* Status Colors */
+  --error-rgb: 239, 68, 68;
+  --error-color: #ef4444;
+
+  --warning-rgb: 245, 158, 11;
+  --warning-color: #f59e0b;
+
+  --info-rgb: 51, 204, 255;
+  --info-color: #33ccff;
+
+  --cancel-color: #666666;
+
+  /* Effects */
+  --glow: 0 0 2px var(--terminal-green), 0 0 4px var(--terminal-green);
+  --glow-strong: 0 0 10px var(--terminal-green), 0 0 20px var(--terminal-green), 0 0 30px var(--terminal-green);
+  --terminal-glow: rgba(var(--terminal-green-rgb), 0.8);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  cursor: none !important;
+}
+
+body {
+  font-family: 'VT323', 'Courier New', monospace;
+  background: var(--terminal-bg);
+  color: var(--terminal-green);
+  overflow: hidden;
+  height: 100vh;
+  text-shadow: var(--glow);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+/* CRT Overlay & Vignette */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.6) 100%),
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 100%, 100% 4px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Scanlines */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px);
+  pointer-events: none;
+  z-index: 9998;
+  animation: scanline 8s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+/* Animazione blink */
+@keyframes blink {
+
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: blink 1s infinite;
+}
+
+/* Custom scrollbar - Blocky Style */
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--terminal-dark);
+  border-left: 2px dashed var(--terminal-green-dim);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--terminal-green-dim);
+  border: 2px solid var(--terminal-bg);
+  box-shadow: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-green);
+}
+
+/* Animazione fade in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}

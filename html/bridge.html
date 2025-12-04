@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            cursor: none !important; /* Nasconde cursore ovunque */
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        #input-capture {
+            position: absolute;
+            top: -9999px; /* Fuori dallo schermo */
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Div contenteditable che cattura i tasti e il paste -->
+    <div id="input-capture" contenteditable="true"></div>
+
+    <script>
+        //console.log('[Bridge] Script loading...');
+        const input = document.getElementById('input-capture');
+        let isActive = false;
+        let currentDui = null;
+
+        //console.log('[Bridge] Input element:', input);
+
+        // Ascolta comandi da Lua
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+
+            if (data.action === 'activate') {
+                isActive = true;
+                currentDui = data.dui;
+                
+                // Forza il focus con click + focus + svuota contenuto
+                input.textContent = '';
+                input.click();
+                input.focus();
+            } else if (data.action === 'deactivate') {
+                isActive = false;
+                currentDui = null;
+                input.blur();
+            }
+        });
+
+        // Cattura eventi tastiera SOLO sull'input per evitare duplicati
+        input.addEventListener('keydown', (e) => {
+            if (!isActive || !currentDui) return;
+
+            // NON bloccare CTRL+V per permettere l'evento paste
+            const isCtrlV = e.ctrlKey && e.key.toLowerCase() === 'v';
+            if (!isCtrlV) {
+                // Previeni comportamento default solo se NON è CTRL+V
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Invia alla DUI tramite fetch al callback Lua
+            fetch(`https://zBusinessManager/bridgeKeyPress`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    key: e.key,
+                    code: e.code,
+                    keyCode: e.keyCode,
+                    shiftKey: e.shiftKey,
+                    ctrlKey: e.ctrlKey,
+                    altKey: e.altKey
+                })
+            }).catch(err => {});
+        });
+
+        // Cattura eventi paste direttamente
+        input.addEventListener('paste', (e) => {
+            if (!isActive || !currentDui) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const pastedText = e.clipboardData.getData('text');
+            input.textContent = '';
+
+            // Invia il testo incollato alla DUI
+            fetch(`https://zBusinessManager/bridgePaste`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: pastedText
+                })
+            }).catch(err => {});
+        });
+
+        // Cattura eventi wheel (scroll mouse)
+        window.addEventListener('wheel', (e) => {
+            if (!isActive || !currentDui) return;
+
+            // Invia scroll alla DUI tramite Lua
+            fetch(`https://zBusinessManager/bridgeScroll`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    deltaX: e.deltaX,
+                    deltaY: e.deltaY,
+                    deltaZ: e.deltaZ,
+                    deltaMode: e.deltaMode
+                })
+            }).catch(err => {});
+        }, { passive: true });
+
+        // Mantieni focus sull'input
+        setInterval(() => {
+            if (isActive && document.activeElement !== input) {
+                //console.log('[Bridge] Re-focusing input');
+                input.focus();
+            }
+        }, 100);
+
+        //console.log('[Bridge] ✅ NUI Bridge loaded and ready');
+    </script>
+</body>
+</html>

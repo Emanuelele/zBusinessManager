@@ -1,0 +1,186 @@
+.notification-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.notification-item {
+    pointer-events: auto;
+    width: 450px;
+    background: #000;
+    border: 2px solid var(--terminal-green);
+    padding: 15px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 4px 4px 0px rgba(0, 255, 0, 0.2);
+}
+
+.notification-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--terminal-green);
+    opacity: 0.5;
+    animation: scan 2s linear infinite;
+}
+
+.notification-item.error {
+    border-color: #ff3333;
+    box-shadow: 4px 4px 0px rgba(255, 51, 51, 0.2);
+}
+
+.notification-item.error::before {
+    background: #ff3333;
+}
+
+.notification-item.error .notification-message,
+.notification-item.error .notification-prefix,
+.notification-cursor.error,
+.notification-item.error .notification-close {
+    color: #ff3333;
+    text-shadow: 0 0 5px rgba(255, 51, 51, 0.5);
+}
+
+.notification-item.success {
+    border-color: var(--terminal-green);
+    box-shadow: 4px 4px 0px rgba(0, 255, 0, 0.2);
+}
+
+.notification-item.success::before {
+    background: var(--terminal-green);
+}
+
+.notification-item.success .notification-message,
+.notification-cursor.success,
+.notification-item.success .notification-prefix,
+.notification-item.success .notification-close {
+    color: var(--terminal-green);
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.notification-item.info {
+    border-color: #33ccff;
+    box-shadow: 4px 4px 0px rgba(51, 204, 255, 0.2);
+}
+
+.notification-item.info::before {
+    background: #33ccff;
+}
+
+.notification-item.info .notification-message,
+.notification-item.info .notification-prefix,
+.notification-cursor.info,
+.notification-item.info .notification-close {
+    color: #33ccff;
+    text-shadow: 0 0 5px rgba(51, 204, 255, 0.5);
+}
+
+
+.notification-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.notification-prefix {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.4rem;
+    opacity: 0.8;
+    letter-spacing: 1px;
+}
+
+.notification-message {
+    font-family: 'VT323', 'Share Tech Mono', monospace;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: bold;
+}
+
+.notification-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: currentColor;
+    animation: blink 1s step-end infinite;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 0 0 0 10px;
+    font-weight: bold;
+}
+
+.notification-close:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.notification-scanline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            transparent 50%,
+            rgba(0, 0, 0, 0.2) 51%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes scan {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(1000%);
+    }
+
+    /* Move way past the bottom */
+}

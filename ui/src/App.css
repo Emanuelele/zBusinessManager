@@ -1,0 +1,375 @@
+/* Terminal CRT anni '70 - Stile VT100 / IBM 3270 */
+:root {
+  --terminal-green: #f79400;
+  --terminal-green-dim: #eab508;
+  --terminal-bg: #0c0807;
+  --terminal-glow: #f7a100;
+  --scan-line-opacity: 0.05;
+  --floppy-body: #382b005e;
+  --input-bg: #ffee0012;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--terminal-bg);
+}
+
+body {
+  color: var(--terminal-green);
+  font-family: 'Courier New', 'Courier', monospace;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Effetto CRT scanlines */
+#root::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 2;
+  pointer-events: none;
+  animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 0 4px;
+  }
+}
+
+/* Effetto phosphor glow */
+#root::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(14, 12, 10, 0.1);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.27861;
+  }
+
+  5% {
+    opacity: 0.34769;
+  }
+
+  10% {
+    opacity: 0.23604;
+  }
+
+  15% {
+    opacity: 0.90626;
+  }
+
+  20% {
+    opacity: 0.18128;
+  }
+
+  25% {
+    opacity: 0.83891;
+  }
+
+  30% {
+    opacity: 0.65583;
+  }
+
+  35% {
+    opacity: 0.67807;
+  }
+
+  40% {
+    opacity: 0.26559;
+  }
+
+  45% {
+    opacity: 0.84693;
+  }
+
+  50% {
+    opacity: 0.96019;
+  }
+
+  55% {
+    opacity: 0.08594;
+  }
+
+  60% {
+    opacity: 0.20313;
+  }
+
+  65% {
+    opacity: 0.71988;
+  }
+
+  70% {
+    opacity: 0.53455;
+  }
+
+  75% {
+    opacity: 0.37288;
+  }
+
+  80% {
+    opacity: 0.71428;
+  }
+
+  85% {
+    opacity: 0.70419;
+  }
+
+  90% {
+    opacity: 0.7003;
+  }
+
+  95% {
+    opacity: 0.36108;
+  }
+
+  100% {
+    opacity: 0.24387;
+  }
+}
+
+/* Effetto curvatura schermo CRT */
+#root {
+  filter: contrast(1.2) brightness(1.1);
+}
+
+/* Input fields stile terminale */
+input[type="text"],
+input[type="password"],
+textarea,
+select {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--terminal-green);
+  color: var(--terminal-green);
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  padding: 8px 4px;
+  outline: none;
+  width: 100%;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 0 5px var(--terminal-glow);
+  transition: all 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 15px var(--terminal-glow);
+  border-bottom-color: var(--terminal-green);
+}
+
+input::placeholder {
+  color: var(--terminal-green);
+  opacity: 0.4;
+}
+
+/* Buttons stile comando terminale */
+button {
+  background: transparent;
+  border: 2px solid var(--terminal-green);
+  color: var(--terminal-green);
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 24px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  box-shadow: 0 0 10px var(--terminal-glow);
+}
+
+button::before {
+  content: '>';
+  position: absolute;
+  left: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+button:hover {
+  background: var(--terminal-green);
+  color: var(--terminal-bg);
+  box-shadow: 0 0 20px var(--terminal-green);
+}
+
+button:hover::before {
+  opacity: 1;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Text animations */
+.flicker {
+  animation: text-flicker 3s linear infinite;
+}
+
+@keyframes text-flicker {
+  0% {
+    opacity: 1;
+  }
+
+  2% {
+    opacity: 0.8;
+  }
+
+  4% {
+    opacity: 1;
+  }
+
+  8% {
+    opacity: 0.9;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Blinking cursor */
+.cursor-blink::after {
+  content: '█';
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Glow text effect */
+.glow {
+  text-shadow:
+    0 0 5px var(--terminal-green),
+    0 0 10px var(--terminal-green),
+    0 0 20px var(--terminal-green);
+}
+
+/* Terminal borders */
+.terminal-border {
+  border: 3px solid var(--terminal-green);
+  box-shadow:
+    0 0 10px var(--terminal-glow),
+    inset 0 0 10px var(--terminal-glow);
+  padding: 20px;
+}
+
+/* Scrollbar stile terminale */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--terminal-bg);
+  border: 1px solid var(--terminal-green);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--terminal-green);
+  border: 1px solid var(--terminal-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-green);
+  box-shadow: 0 0 10px var(--terminal-green);
+}
+
+/* Utility classes */
+.text-center {
+  text-align: center;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.monospace {
+  font-family: 'Courier New', monospace;
+}
+
+/* Terminal border style */
+.terminal-border {
+  border: 1px solid var(--terminal-green) !important;
+  box-shadow: 0 0 10px var(--terminal-glow);
+}
+
+/* Force scrollbar sempre visibile */
+.overflow-y-scroll {
+  overflow-y: scroll !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--terminal-green) var(--terminal-bg);
+}
+
+/* Responsive text size */
+@media (max-width: 1920px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1280px) {
+  body {
+    font-size: 14px;
+  }
+}

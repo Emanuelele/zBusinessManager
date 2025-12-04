@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        #terminal-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            background: transparent;
+        }
+
+        #terminal-frame.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- iFrame che carica la React UI -->
+    <iframe id="terminal-frame" src="nui://zBusinessManager/ui/dist/index.html"></iframe>
+
+    <script>
+        const frame = document.getElementById('terminal-frame');
+        let isActive = false;
+        let businessId = null;
+
+        // Ascolta messaggi da FiveM
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+
+            if (data.action === 'open') {
+                isActive = true;
+                businessId = data.business;
+                frame.classList.add('active');
+
+                // Inoltra messaggio all'iframe nel formato corretto per useNuiEvent
+                setTimeout(() => {
+                    frame.contentWindow.postMessage({
+                        action: 'open',
+                        data: {
+                            business: data.business,
+                            businessLabel: data.businessLabel
+                        }
+                    }, '*');
+                }, 100);
+
+            } else if (data.action === 'close') {
+                isActive = false;
+                businessId = null;
+                frame.classList.remove('active');
+
+                // Inoltra messaggio all'iframe
+                frame.contentWindow.postMessage({
+                    action: 'close',
+                    data: {}
+                }, '*');
+            }
+        });
+
+        // Intercetta fetch dall'iframe per i NUI callbacks
+        const originalFetch = window.fetch;
+        if (frame.contentWindow) {
+            // Proxy fetch dell'iframe verso il parent
+            window.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'proxyFetch') {
+                    const { url, options, id } = event.data;
+
+                    fetch(url, options)
+                        .then(response => response.json())
+                        .then(data => {
+                            frame.contentWindow.postMessage({
+                                type: 'proxyFetchResponse',
+                                id: id,
+                                data: data
+                            }, '*');
+                        })
+                        .catch(error => {
+                            frame.contentWindow.postMessage({
+                                type: 'proxyFetchError',
+                                id: id,
+                                error: error.message
+                            }, '*');
+                        });
+                }
+            });
+        }
+
+        // Helper
+        function GetParentResourceName() {
+            return 'zBusinessManager';
+        }
+    </script>
+</body>
+</html>
