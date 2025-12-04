@@ -10,19 +10,19 @@ version      '2.1.0'
 shared_script 'shared.lua'
 
 client_scripts {
-    '@ox_lib/init.lua',
     'core/client/*.lua',
     'modules/**/client/*.lua'
 }
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    '@ox_lib/init.lua',
     'core/server/*.lua',
     'modules/**/server/*.lua'
 }
 
 shared_scripts {
+    '@es_extended/imports.lua',
+    '@ox_lib/init.lua',
     'config.lua',
     'core/shared/*.lua',
     'modules/*/config.lua',

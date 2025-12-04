@@ -6,7 +6,13 @@ TerminalManager.activeBusiness = nil
 TerminalManager.activeCam = nil
 TerminalManager.isOpen = false
 TerminalManager.interactionThread = nil
+TerminalManager.duiBusiness = nil
 
+exports("SetNuiFocus", SetNuiFocus)
+exports("RefreshCamera", function()
+    TerminalManager.SetupCamera(TerminalManager.duiBusiness.prop)
+    TerminalManager.StartInteraction(TerminalManager.duiBusiness)
+end)
 function TerminalManager.Open(businessId)
     local business = Config.BusinessDefinitions[businessId]
     if not business or not business.terminal then return end
@@ -33,10 +39,12 @@ function TerminalManager.Open(businessId)
 
     -- Setup camera e interazione
     local duiBusiness = DUIManager.businesses[businessId]
+    TerminalManager.duiBusiness = duiBusiness
     if duiBusiness and DoesEntityExist(duiBusiness.prop) then
         TerminalManager.SetupCamera(duiBusiness.prop)
         TerminalManager.StartInteraction(duiBusiness)
     end
+    LocalPlayer.state:set("inTerminal", true, true)
     TriggerServerEvent('zBusinessManager:server:openTerminal', businessId)
     print("^2[Terminal] Opened for " .. businessId)
 end
@@ -62,6 +70,7 @@ function TerminalManager.Close()
         action = 'deactivate'
     })
 
+    LocalPlayer.state:set("inTerminal", false, true)
     TerminalManager.isOpen = false
     TerminalManager.activeBusiness = nil
 
@@ -94,7 +103,7 @@ function TerminalManager.StartInteraction(duiBusiness)
             
             local mouseX
             local mouseY
-            if not LocalPlayer.state.invOpen then 
+            if not LocalPlayer.state.invOpen and not LocalPlayer.state.selecting_position then 
                 -- Disabilita controlli
                 DisableAllControlActions(0)
                 EnableControlAction(0, 1, true)   -- Mouse X
@@ -142,6 +151,8 @@ function TerminalManager.StartInteraction(duiBusiness)
                 if IsDisabledControlJustPressed(0, 322) and not LocalPlayer.state.invOpen then
                     TerminalManager.Close()
                 end
+            else
+                EnableAllControlActions(0)
 
             end
             if IsDisabledControlJustPressed(0, 322) and LocalPlayer.state.invOpen then

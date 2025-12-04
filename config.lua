@@ -454,7 +454,7 @@ Config.BusinessDefinitions = {
     cardealer = {
         label = "CARDEALER",
         modules = {
-            
+            cardealer = { password = "eudora" },
         },
         terminal = {
             coords = vec3(-235.8895, 6211.1743, 32.0),

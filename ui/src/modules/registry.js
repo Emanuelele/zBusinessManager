@@ -6,6 +6,7 @@ import Orders from '../pages/Orders';
 import Payroll from '../pages/Payroll';
 import SafeRegistry from '../pages/SafeRegistry';
 import Sheriff from '../pages/Sheriff';
+import Cardealer from '../pages/Cardealer';
 
 // Module Registry
 // Maps module IDs to their components and metadata
@@ -86,6 +87,16 @@ export const modules = {
         label: 'SHERIFF',
         icon: '👮',
         component: Sheriff,
+        requiresJob: true,
+        requiresPassword: true,
+        color: 'red'
+    },
+    cardealer: {
+        id: 'cardealer',
+        path: '/cardealer',
+        label: 'CARDEALER',
+        icon: '🚗',
+        component: Cardealer,
         requiresJob: true,
         requiresPassword: true,
         color: 'red'
